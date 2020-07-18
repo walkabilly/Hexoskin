@@ -1,6 +1,6 @@
 ---
 title: "Hexoskin"
-author: "Jonathan Slaney"
+author: "Jonathan Slaney and Daniel Fuller"
 date: "03/10/2019"
 output: html_document
 ---
@@ -29,11 +29,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 hexodata_temp <- NULL
 
-hexodata_temp <- dir(path = "~/Graduate Studies/Hexoskin/DatasetsHexoskin", full.names = TRUE, pattern = "*.csv", recursive = TRUE) %>%
+hexodata_temp <- dir(path = "raw/", full.names = TRUE, pattern = "*.csv", recursive = TRUE) %>%
    purrr::map(function(i){
      dfhx <- read.csv(i, header = TRUE)
-     dfhx$city <- stringr::str_sub(i, 45, 48)
-     dfhx$participants <- stringr::str_sub(i, 62, 63)
+     dfhx$city <- stringr::str_sub(i, 6, 10)
+     dfhx$participants <- stringr::str_sub(i, 16, 17)
      hexodata_temp <- bind_rows(hexodata_temp, dfhx)
    })
 
@@ -42,6 +42,7 @@ hexo_data_temp <- bind_rows(hexodata_temp)
 glimpse(hexo_data_temp)
 
 table(hexo_data_temp$participants)
+table(hexo_data_temp$city)
 ```
 
 ### Change column names, create hexo_data and write to csv
@@ -116,7 +117,7 @@ hexo_data$minute_ventilation_l_city <- hexo_data$minute_ventilation_ml_city/1000
 ```{r}
 table(hexo_data$participants)
 
-participants <- read_csv("/Users/dfuller/Desktop/DatasetsHexoskin/Hexoskin_participants.csv")
+participants <- read_csv("Hexoskin_participants.csv")
 
 table(participants$participants)
 
@@ -179,22 +180,4 @@ hxd <- subset(hxd, hr >= 50)
 
 write_csv(hxd, "hexo_data_analysis.csv")
 ```
-
-Max HR by participant
-
-```{r}
-hexodata_vo2 <- hexodata %>%
-  group_by(participants)
-  describe.by(hexodata$hr)
-```
-
-
-Jobs
-Find maximum recorded heart rate for each participant
-calc max for each participant
-
-Make more changes
-
-
-
 
