@@ -1,6 +1,6 @@
 ---
 title: "Hexoskin"
-author: "Jonathan Slaney"
+author: "Jonathan Slaney and Daniel Fuller"
 date: "03/10/2019"
 output: html_document
 ---
@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Looping over data and creating city and participant columns
 
 ```{r}
-hxd <- read_csv("/Users/dfuller/Desktop/DatasetsHexoskin/hexo_data_analysis.csv")
+hxd <- read_csv("hexo_data_analysis.csv")
 
 ### Descriptives (for heart rate, breathing) psych package describe function
 ```
@@ -182,7 +182,7 @@ ggplot(hxd, aes(x = hr, y = ve_L, color = sex) ) +
 ### Linear regression for hr and Ve with VE squared plus gender plus city 
 
 ```{r}
-lm_hr_ve5 <- lm(ve_L ~ hr + I(hr^2) + sex + city, data = hxd)
+lm_hr_ve5 <- lm(ve_L ~ hr + I(hr^2) + sex + factor(city), data = hxd)
 summary(lm_hr_ve5)
 fit_m5 <- glance(lm_hr_ve5)
 
@@ -214,7 +214,7 @@ city_regressions
 
 ### Simple linear regression for MET and Ve
 
-```{r}
+```{r, eval = FALSE}
 lm_hr_ve <- lm(ve_L ~ METs, data = MET)
 summary(lm_hr_ve)
 fit_mv1 <- glance(lm_hr_ve)
@@ -229,7 +229,7 @@ ggplot(MET, aes(x = METs, y = ve_L)) +
 
 ### Simple linear regression for MET and Ve with MET squared
 
-```{r}
+```{r, eval = FALSE}
 lm_hr_ve2 <- lm(ve_L ~ METs + I(METs^2), data = MET)
 summary(lm_hr_ve2)
 fit_mv2 <- glance(lm_hr_ve2)
@@ -244,7 +244,7 @@ ggplot(MET, aes(x = METs, y = ve_L)) +
 
 ### Simple linear regression for MET and Ve with MET cubed
 
-```{r}
+```{r, eval = FALSE}
 lm_hr_ve3 <- lm(ve_L ~ METs + I(METs^2) + I(METs^3), data = MET)
 summary(lm_hr_ve3)
 fit_mv3 <- glance(lm_hr_ve3)
@@ -259,7 +259,7 @@ ggplot(MET, aes(x = METs, y = ve_L)) +
 
 ### Simple linear regression for MET and Ve with MET cubed on a violin plot
 
-```{r}
+```{r, eval = FALSE}
 ggplot(MET, aes(x = METs, y = ve_L)) + 
    geom_violin(size = 3, alpha = 0.1) + 
    geom_line(aes(y = lm3_fitted), size = 1, colour = "red") +
@@ -269,7 +269,7 @@ ggplot(MET, aes(x = METs, y = ve_L)) +
 
 ### Linear regression for MET and Ve with MET squared plus gender
 
-```{r}
+```{r, eval = FALSE}
 lm_hr_ve4 <- lm(ve_L ~ METs + I(METs^2) + sex, data = MET)
 summary(lm_hr_ve4)
 fit_mv4 <- glance(lm_hr_ve4)
@@ -285,7 +285,7 @@ ggplot(MET, aes(x = METs, y = ve_L, color = sex) ) +
 
 ### Linear regression for MET and Ve with MET squared plus gender plus city 
 
-```{r}
+```{r, eval = FALSE}
 lm_hr_ve5 <- lm(ve_L ~ METs + I(METs^2) + sex + city, data = MET)
 summary(lm_hr_ve5)
 fit_mv5 <- glance(lm_hr_ve5)
@@ -301,12 +301,12 @@ ggplot(MET, aes(x = METs, y = ve_L, color = city)) +
 
 ### Getting fit statistics for each model
 
-```{r}
+```{r, eval = FALSE}
 fitstats <- rbind(fit_mv1, fit_mv2, fit_mv3, fit_mv4, fit_mv5)
 fitstats
 ```
 
-```{r}
+```{r, eval = FALSE}
 city_regressions <- MET %>% 
                      group_by(city) %>% 
                      do(tidy(lm(ve_L ~ METs + I(METs^2), .)))
