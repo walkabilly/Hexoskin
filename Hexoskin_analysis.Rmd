@@ -2,7 +2,9 @@
 title: "Hexoskin"
 author: "Jonathan Slaney and Daniel Fuller"
 date: "03/10/2019"
-output: html_document
+output:
+   html_document:
+      keep_md: true
 ---
 
 ## Necessary packages
@@ -168,7 +170,7 @@ figure1 <- ggarrange(met_histo_city, ve_histo_city,
                     ncol = 2, nrow = 1)
 figure1
 
-ggsave("figure1.pdf", figure1, width = 10, height = 7, dpi = 300)
+ggsave("figure1.pdf", figure1, width = 10, height = 7, dpi = 200)
 ```
 
 ### Fit linear regression to all data
@@ -327,7 +329,7 @@ figure2 <- ggarrange(reg_met_lm, reg_met_sqr, reg_met_cub,
                     labels = c("A. Linear Regression", "B. Squared Regression", "C. Cubed Regression"),
                     ncol = 2, nrow = 2)
 
-ggsave("figure2.pdf", figure2, width = 10, height = 7, dpi = 300)
+ggsave("figure2.pdf", figure2, width = 10, height = 7, dpi = 200)
 ```
 
 ### Linear regression for MET and Ve with MET squared plus gender
