@@ -20,16 +20,29 @@ library(ggpmisc)
 library(effsize)
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-### Looping over data and creating city and participant columns
-
+### Reading analysis data from "Hexoskin_wrangling.Rmd"
 ```{r}
 hxd <- read_csv("hexo_data_analysis.csv")
 
 ### Descriptives (for heart rate, breathing) psych package describe function
+```
+
+
+### Recoding city names
+
+```{r}
+hxd <- hxd %>%
+  mutate(city = case_when(
+  city == "Auckl" ~ "Auckland", 
+  city == "Chris" ~ "Christchurch", 
+  city == "Copen" ~ "Copenhagen", 
+  city == "Delhi" ~ "Delhi", 
+  city == "Lyon1" ~ "Lyon",
+  city == "Montr" ~ "Montreal", 
+  city == "Paris" ~ "Paris")
+  )
+
+table(hxd$city)
 ```
 
 ```{r}
@@ -43,6 +56,13 @@ ggplot(hxd, aes(hr)) +
 describe(hxd$ve_L)
 
 ggplot(hxd, aes(ve_L)) + 
+    geom_histogram()
+```
+
+```{r}
+describe(hxd$MET)
+
+ggplot(hxd, aes(MET)) + 
     geom_histogram()
 ```
 
@@ -115,6 +135,41 @@ plot(cor_hexo_all)
 ```
 
 Here VJ is strange. Appears to have two distinct lines. Might indicates that this is two participants mixed? 
+
+## Figure 1
+
+Histograms of METS by City and VE by City. 
+
+```{r}
+met_histo_city <- ggplot(hxd, aes(x = MET)) + 
+  geom_histogram(aes(y = ..density..), fill = "cornflowerblue", colour = "black", size = 0.4) +
+  geom_density(aes(y = ..density..), colour = "darkred", size = 1) + 
+  ylab("MET density") + 
+  xlab("MET (bpm)") + 
+   facet_wrap(~ city) + 
+   theme_classic()
+plot(met_histo_city)
+```
+
+```{r}
+ve_histo_city <- ggplot(hxd, aes(x = ve_L)) + 
+  geom_histogram(aes(y = ..density..), fill = "cornflowerblue", colour = "black", size = 0.4) +
+  geom_density(aes(y = ..density..), colour = "darkred", size = 1) + 
+  ylab("VE density") + 
+  xlab("VE (bpm)") + 
+   facet_wrap(~ city) + 
+   theme_classic()
+plot(ve_histo_city)
+```
+
+```{r}
+figure1 <- ggarrange(met_histo_city, ve_histo_city,
+                    labels = c("A", "B"),
+                    ncol = 2, nrow = 1)
+figure1
+
+ggsave("figure1.pdf", figure1, width = 10, height = 7, dpi = 300)
+```
 
 ### Fit linear regression to all data
 
@@ -214,101 +269,110 @@ city_regressions
 
 ### Simple linear regression for MET and Ve
 
-```{r, eval = FALSE}
-lm_hr_ve <- lm(ve_L ~ METs, data = MET)
-summary(lm_hr_ve)
-fit_mv1 <- glance(lm_hr_ve)
-MET$lm_fitted <- predict(lm_hr_ve)
+```{r}
+lm_met_ve <- lm(ve_L ~ MET, data = hxd)
+summary(lm_met_ve)
+fit_mv1_met <- glance(lm_met_ve)
+hxd$lm_fitted_met <- predict(lm_met_ve)
 
-ggplot(MET, aes(x = METs, y = ve_L)) + 
-   geom_violin() + 
-   geom_line(aes(y = lm_fitted), size = 1, colour = "red") +
-   xlab("Metabolic Equivelents of Task") + 
-   ylab("Breathing Volume (L/minute)")
+reg_met_lm <- ggplot(hxd, aes(x = MET, y = ve_L)) + 
+   geom_point(size = 1, alpha = 0.05) + 
+   geom_line(aes(y = lm_fitted_met), size = 1, colour = "red") +
+   xlab("MET") + 
+   ylab("Breathing Volume (L/minute)") + 
+   theme_classic()
+plot(reg_met_lm)
 ```
 
 ### Simple linear regression for MET and Ve with MET squared
 
-```{r, eval = FALSE}
-lm_hr_ve2 <- lm(ve_L ~ METs + I(METs^2), data = MET)
-summary(lm_hr_ve2)
-fit_mv2 <- glance(lm_hr_ve2)
-MET$lm2_fitted <- predict(lm_hr_ve2)
+```{r}
+lm_met_ve2 <- lm(ve_L ~ MET + I(MET^2), data = hxd)
+summary(lm_met_ve2)
+fit_mv2_met <- glance(lm_met_ve2)
+hxd$lm2_fitted_met <- predict(lm_met_ve2)
 
-ggplot(MET, aes(x = METs, y = ve_L)) + 
+reg_met_sqr <- ggplot(hxd, aes(x = MET, y = ve_L)) + 
    geom_point(size = 1, alpha = 0.05) + 
-   geom_line(aes(y = lm2_fitted), size = 1, colour = "red") +
+   geom_line(aes(y = lm2_fitted_met), size = 1, colour = "red") +
    xlab("MET") + 
-   ylab("Breathing Volume (L/minute)")
+   ylab("Breathing Volume (L/minute)") + 
+   theme_classic()
+plot(reg_met_sqr)
 ```
 
 ### Simple linear regression for MET and Ve with MET cubed
 
-```{r, eval = FALSE}
-lm_hr_ve3 <- lm(ve_L ~ METs + I(METs^2) + I(METs^3), data = MET)
-summary(lm_hr_ve3)
-fit_mv3 <- glance(lm_hr_ve3)
-MET$lm3_fitted <- predict(lm_hr_ve3)
+```{r}
+lm_met_ve3 <- lm(ve_L ~ MET + I(MET^2) + I(MET^3), data = hxd)
+summary(lm_met_ve3)
+fit_mv3_met <- glance(lm_met_ve3)
+hxd$lm3_fitted_met <- predict(lm_met_ve3)
 
-ggplot(MET, aes(x = METs, y = ve_L)) + 
-   geom_point(size = 3, alpha = 0.1) + 
-   geom_line(aes(y = lm3_fitted), size = 1, colour = "red") +
+reg_met_cub <- ggplot(hxd, aes(x = MET, y = ve_L)) + 
+   geom_point(size = 1, alpha = 0.1) + 
+   geom_line(aes(y = lm3_fitted_met), size = 1, colour = "red") +
    xlab("MET") + 
-   ylab("Breathing Volume (L/minute)")
+   ylab("Breathing Volume (L/minute)") + 
+   theme_classic()
+plot(reg_met_cub)
 ```
 
-### Simple linear regression for MET and Ve with MET cubed on a violin plot
+## Figure 2
 
-```{r, eval = FALSE}
-ggplot(MET, aes(x = METs, y = ve_L)) + 
-   geom_violin(size = 3, alpha = 0.1) + 
-   geom_line(aes(y = lm3_fitted), size = 1, colour = "red") +
-   xlab("MET") + 
-   ylab("Breathing Volume (L/minute)")
+Regression plots
+
+```{r}
+figure2 <- ggarrange(reg_met_lm, reg_met_sqr, reg_met_cub,
+                    labels = c("A. Linear Regression", "B. Squared Regression", "C. Cubed Regression"),
+                    ncol = 2, nrow = 2)
+
+ggsave("figure2.pdf", figure2, width = 10, height = 7, dpi = 300)
 ```
 
 ### Linear regression for MET and Ve with MET squared plus gender
 
-```{r, eval = FALSE}
-lm_hr_ve4 <- lm(ve_L ~ METs + I(METs^2) + sex, data = MET)
-summary(lm_hr_ve4)
-fit_mv4 <- glance(lm_hr_ve4)
+```{r}
+lm_met_ve4 <- lm(ve_L ~ MET + I(MET^2) + sex, data = hxd)
+summary(lm_met_ve4)
+fit_mv4_met <- glance(lm_met_ve4)
 
-MET$lm4_fitted <- predict(lm_hr_ve4, newdata = MET, level = 0)
+hxd$lm4_fitted_met <- predict(lm_met_ve4, newdata = hxd, level = 0)
 
-ggplot(MET, aes(x = METs, y = ve_L, color = sex) ) +
+ggplot(hxd, aes(x = MET, y = ve_L, color = sex) ) +
      geom_point(size = 1, alpha = 0.05) + 
-     geom_line(data = MET, aes(y = lm4_fitted), size = 1) +
-      xlab("METs") + 
-      ylab("Breathing Volume (L/minute)")
+     geom_line(data = hxd, aes(y = lm4_fitted_met), size = 1) +
+      xlab("MET") + 
+      ylab("Breathing Volume (L/minute)") +
+      theme_classic()
 ```
 
 ### Linear regression for MET and Ve with MET squared plus gender plus city 
 
-```{r, eval = FALSE}
-lm_hr_ve5 <- lm(ve_L ~ METs + I(METs^2) + sex + city, data = MET)
-summary(lm_hr_ve5)
-fit_mv5 <- glance(lm_hr_ve5)
+```{r}
+lm_met_ve5 <- lm(ve_L ~ MET + I(MET^2) + sex + city, data = hxd)
+summary(lm_met_ve5)
+fit_mv5_met <- glance(lm_met_ve5)
 
-MET$lm5_fitted <- predict(lm_hr_ve5, newdata = MET, level = 0)
+hxd$lm5_fitted_met <- predict(lm_met_ve5, newdata = hxd, level = 0)
 
-ggplot(MET, aes(x = METs, y = ve_L, color = city)) +
+ggplot(hxd, aes(x = MET, y = ve_L, color = city)) +
      geom_point(size = 1, alpha = 0.05) + 
-     geom_line(data = metric_vec_template(), aes(y = lm5_fitted), size = 1) +
+     geom_line(data = hxd, aes(y = lm5_fitted_met), size = 1) +
       xlab("MET") + 
       ylab("Breathing Volume (L/minute)")
 ```
 
 ### Getting fit statistics for each model
 
-```{r, eval = FALSE}
-fitstats <- rbind(fit_mv1, fit_mv2, fit_mv3, fit_mv4, fit_mv5)
-fitstats
+```{r}
+fitstats_met <- rbind(fit_mv1_met, fit_mv2_met, fit_mv3_met, fit_mv4_met, fit_mv5_met)
+kable(fitstats_met)
 ```
 
-```{r, eval = FALSE}
-city_regressions <- MET %>% 
+```{r}
+city_regressions <- hxd %>% 
                      group_by(city) %>% 
-                     do(tidy(lm(ve_L ~ METs + I(METs^2), .)))
-city_regressions
+                     do(tidy(lm(ve_L ~ MET + I(MET^2), .)))
+kable(city_regressions)
 ```
