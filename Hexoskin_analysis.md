@@ -1235,15 +1235,11 @@ plot(met_all_gam)
 ### Calculate RMSE 1
 
 ```r
-RMSE(hxd$ve_L, hxd$lm1_fitted_met)
+RMSE(hxd$ve_L, hxd$lm_fitted_met)
 ```
 
 ```
-## Warning: Unknown or uninitialised column: `lm1_fitted_met`.
-```
-
-```
-## [1] 40.46999
+## [1] 13.36998
 ```
 
 ### Calculate RMSE 2

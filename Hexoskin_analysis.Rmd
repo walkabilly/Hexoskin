@@ -425,7 +425,7 @@ plot(met_all_gam)
 
 ### Calculate RMSE 1
 ```{r}
-RMSE(hxd$ve_L, hxd$lm1_fitted_met)
+RMSE(hxd$ve_L, hxd$lm_fitted_met)
 ```
 
 ### Calculate RMSE 2
