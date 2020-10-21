@@ -20,6 +20,8 @@ library(psych)
 library(ggpubr)
 library(ggpmisc)
 library(effsize)
+library(Metrics)
+library(mgcv)
 ```
 
 ### Reading analysis data from "Hexoskin_wrangling.Rmd"
@@ -332,10 +334,10 @@ figure2 <- ggarrange(reg_met_lm, reg_met_sqr, reg_met_cub,
 ggsave("figure2.pdf", figure2, width = 10, height = 7, dpi = 200)
 ```
 
-### Linear regression for MET and Ve with MET squared plus gender
+### Linear regression for MET and Ve with MET squared plus gender and age
 
 ```{r}
-lm_met_ve4 <- lm(ve_L ~ MET + I(MET^2) + sex, data = hxd)
+lm_met_ve4 <- lm(ve_L ~ MET + I(MET^2) + sex + age, data = hxd)
 summary(lm_met_ve4)
 fit_mv4_met <- glance(lm_met_ve4)
 
@@ -349,20 +351,24 @@ ggplot(hxd, aes(x = MET, y = ve_L, color = sex) ) +
       theme_classic()
 ```
 
-### Linear regression for MET and Ve with MET squared plus gender plus city 
+### Linear regression for MET and Ve with MET squared plus gender, age and city 
 
 ```{r}
-lm_met_ve5 <- lm(ve_L ~ MET + I(MET^2) + sex + city, data = hxd)
+lm_met_ve5 <- lm(ve_L ~ MET + I(MET^2) + city, data = hxd)
 summary(lm_met_ve5)
 fit_mv5_met <- glance(lm_met_ve5)
 
 hxd$lm5_fitted_met <- predict(lm_met_ve5, newdata = hxd, level = 0)
 
-ggplot(hxd, aes(x = MET, y = ve_L, color = city)) +
+figure3 <- ggplot(hxd, aes(x = MET, y = ve_L, color = city)) +
      geom_point(size = 1, alpha = 0.05) + 
      geom_line(data = hxd, aes(y = lm5_fitted_met), size = 1) +
       xlab("MET") + 
-      ylab("Breathing Volume (L/minute)")
+      ylab("Breathing Volume (L/minute)") + 
+   theme_classic()
+plot(figure3)
+
+ggsave("figure3.pdf", figure3, width = 10, height = 7, dpi = 200)
 ```
 
 ### Getting fit statistics for each model
@@ -377,4 +383,67 @@ city_regressions <- hxd %>%
                      group_by(city) %>% 
                      do(tidy(lm(ve_L ~ MET + I(MET^2), .)))
 kable(city_regressions)
+```
+
+## GAM using Ve_L and MET
+
+```{r}
+met_gam <- gam(ve_L ~ s(MET), data = hxd)
+summary(met_gam)
+
+plot(met_gam)
+```
+
+### GAM using ve_L, MET and city
+
+```{r}
+met_city_gam <- gam(ve_L ~ s(MET) + city, data = hxd)
+summary(met_city_gam)
+
+plot(met_city_gam)
+```
+
+### GAM using ve_L, MET, City and Sex
+
+```{r}
+met_city_sex_gam <- gam(ve_L ~ s(MET) + city + sex, data = hxd)
+summary(met_city_sex_gam)
+
+plot(met_city_sex_gam)
+```
+
+## GAM using ve, MET, city, age, sex
+
+```{r}
+met_all_gam <- gam(ve_L ~ s(MET) + city + sex + age, data = hxd)
+summary(met_all_gam)
+
+plot(met_all_gam)
+```
+
+### Calculate rmse for models 1 to 5
+
+### Calculate RMSE 1
+```{r}
+rmse(hxd$ve_L, predict(lm_met_ve1, data.frame(hxd)))
+```
+
+### Calculate RMSE 2
+```{r}
+rmse(hxd$ve_L, predict(lm_hr_ve2, data.frame(hxd)))
+```
+
+### Calculate RMSE 3
+```{r}
+rmse(hxd$ve_L, predict(lm_hr_ve3, data.frame(hxd)))
+```
+
+### Calculate RMSE 4
+```{r}
+rmse(hxd$ve_L, predict(lm_hr_ve4, data.frame(hxd)))
+```
+
+### Calculate RMSE lm5
+```{r}
+rmse(hxd$ve_L, predict(lm_hr_ve5, data.frame(hxd)))
 ```
