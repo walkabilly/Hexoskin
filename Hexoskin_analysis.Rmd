@@ -20,7 +20,7 @@ library(psych)
 library(ggpubr)
 library(ggpmisc)
 library(effsize)
-library(Metrics)
+library(SimDesign)
 library(mgcv)
 ```
 
@@ -425,25 +425,25 @@ plot(met_all_gam)
 
 ### Calculate RMSE 1
 ```{r}
-rmse(hxd$ve_L, predict(lm_met_ve1, data.frame(hxd)))
+RMSE(hxd$ve_L, hxd$lm1_fitted_met)
 ```
 
 ### Calculate RMSE 2
 ```{r}
-rmse(hxd$ve_L, predict(lm_hr_ve2, data.frame(hxd)))
+RMSE(hxd$ve_L, hxd$lm2_fitted_met)
 ```
 
 ### Calculate RMSE 3
 ```{r}
-rmse(hxd$ve_L, predict(lm_hr_ve3, data.frame(hxd)))
+RMSE(hxd$ve_L, hxd$lm3_fitted_met)
 ```
 
 ### Calculate RMSE 4
 ```{r}
-rmse(hxd$ve_L, predict(lm_hr_ve4, data.frame(hxd)))
+RMSE(hxd$ve_L, hxd$lm4_fitted_met)
 ```
 
 ### Calculate RMSE lm5
 ```{r}
-rmse(hxd$ve_L, predict(lm_hr_ve5, data.frame(hxd)))
+RMSE(hxd$ve_L, hxd$lm5_fitted_met)
 ```

@@ -16,18 +16,18 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ── Attaching packages ───────────────────────────────────────────────────── tidyverse 1.3.0 ──
 ```
 
 ```
 ## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
-## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
 ## ✓ readr   1.3.1     ✓ forcats 0.5.0
 ```
 
 ```
-## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ──────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```
@@ -37,19 +37,19 @@ library(tidymodels)
 ```
 
 ```
-## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────── tidymodels 0.1.1 ──
+## ── Attaching packages ──────────────────────────────────────────────────── tidymodels 0.1.1 ──
 ```
 
 ```
 ## ✓ broom     0.7.0      ✓ recipes   0.1.13
-## ✓ dials     0.0.8      ✓ rsample   0.0.7 
+## ✓ dials     0.0.9      ✓ rsample   0.0.7 
 ## ✓ infer     0.5.3      ✓ tune      0.1.1 
-## ✓ modeldata 0.0.2      ✓ workflows 0.1.2 
-## ✓ parsnip   0.1.2      ✓ yardstick 0.0.7
+## ✓ modeldata 0.0.2      ✓ workflows 0.2.0 
+## ✓ parsnip   0.1.3      ✓ yardstick 0.0.7
 ```
 
 ```
-## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
+## ── Conflicts ─────────────────────────────────────────────────────── tidymodels_conflicts() ──
 ## x scales::discard() masks purrr::discard()
 ## x dplyr::filter()   masks stats::filter()
 ## x recipes::fixed()  masks stringr::fixed()
@@ -110,6 +110,20 @@ library(psych)
 ```r
 library(ggpubr)
 library(ggpmisc)
+```
+
+```
+## 
+## Attaching package: 'ggpmisc'
+```
+
+```
+## The following object is masked from 'package:ggplot2':
+## 
+##     annotate
+```
+
+```r
 library(effsize)
 ```
 
@@ -122,6 +136,30 @@ library(effsize)
 ## The following object is masked from 'package:psych':
 ## 
 ##     cohen.d
+```
+
+```r
+library(SimDesign)
+library(mgcv)
+```
+
+```
+## Loading required package: nlme
+```
+
+```
+## 
+## Attaching package: 'nlme'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+##     collapse
+```
+
+```
+## This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
 ```
 
 ### Reading analysis data from "Hexoskin_wrangling.Rmd"
@@ -864,35 +902,36 @@ figure2 <- ggarrange(reg_met_lm, reg_met_sqr, reg_met_cub,
 ggsave("figure2.pdf", figure2, width = 10, height = 7, dpi = 200)
 ```
 
-### Linear regression for MET and Ve with MET squared plus gender
+### Linear regression for MET and Ve with MET squared plus gender and age
 
 
 ```r
-lm_met_ve4 <- lm(ve_L ~ MET + I(MET^2) + sex, data = hxd)
+lm_met_ve4 <- lm(ve_L ~ MET + I(MET^2) + sex + age, data = hxd)
 summary(lm_met_ve4)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = ve_L ~ MET + I(MET^2) + sex, data = hxd)
+## lm(formula = ve_L ~ MET + I(MET^2) + sex + age, data = hxd)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -61.908  -8.681  -2.466   6.964  76.087 
+## -64.927  -7.813  -1.285   6.648  74.226 
 ## 
 ## Coefficients:
 ##              Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) 14.117151   0.299140  47.193   <2e-16 ***
-## MET          0.767869   0.050291  15.268   <2e-16 ***
-## I(MET^2)     0.065671   0.001986  33.061   <2e-16 ***
-## sexWoman     0.063793   0.144622   0.441    0.659    
+## (Intercept) 30.486817   0.342284   89.07   <2e-16 ***
+## MET          1.081642   0.046923   23.05   <2e-16 ***
+## I(MET^2)     0.053385   0.001853   28.81   <2e-16 ***
+## sexWoman    -1.811487   0.136414  -13.28   <2e-16 ***
+## age         -0.552199   0.006728  -82.08   <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 13.2 on 43072 degrees of freedom
-## Multiple R-squared:  0.4743,	Adjusted R-squared:  0.4743 
-## F-statistic: 1.296e+04 on 3 and 43072 DF,  p-value: < 2.2e-16
+## Residual standard error: 12.28 on 43071 degrees of freedom
+## Multiple R-squared:  0.5454,	Adjusted R-squared:  0.5454 
+## F-statistic: 1.292e+04 on 4 and 43071 DF,  p-value: < 2.2e-16
 ```
 
 ```r
@@ -910,41 +949,40 @@ ggplot(hxd, aes(x = MET, y = ve_L, color = sex) ) +
 
 ![](Hexoskin_analysis_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
-### Linear regression for MET and Ve with MET squared plus gender plus city 
+### Linear regression for MET and Ve with MET squared plus gender, age and city 
 
 
 ```r
-lm_met_ve5 <- lm(ve_L ~ MET + I(MET^2) + sex + city, data = hxd)
+lm_met_ve5 <- lm(ve_L ~ MET + I(MET^2) + city, data = hxd)
 summary(lm_met_ve5)
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = ve_L ~ MET + I(MET^2) + sex + city, data = hxd)
+## lm(formula = ve_L ~ MET + I(MET^2) + city, data = hxd)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -59.148  -8.118  -1.871   6.652  73.521 
+## -58.519  -8.116  -2.033   6.599  73.890 
 ## 
 ## Coefficients:
 ##                   Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)      14.443993   0.336892  42.874  < 2e-16 ***
-## MET               0.669597   0.048331  13.854  < 2e-16 ***
-## I(MET^2)          0.068239   0.001908  35.762  < 2e-16 ***
-## sexWoman         -1.344922   0.142602  -9.431  < 2e-16 ***
-## cityChristchurch  2.735109   0.253056  10.808  < 2e-16 ***
-## cityCopenhagen    3.894114   0.217284  17.922  < 2e-16 ***
-## cityDelhi        -5.118151   0.231777 -22.082  < 2e-16 ***
-## cityLyon         -2.207574   0.239761  -9.207  < 2e-16 ***
-## cityMontreal      8.032825   0.236881  33.911  < 2e-16 ***
-## cityParis        -1.676814   0.245524  -6.830 8.63e-12 ***
+## (Intercept)      14.070109   0.334893  42.014  < 2e-16 ***
+## MET               0.674851   0.048377  13.950  < 2e-16 ***
+## I(MET^2)          0.067592   0.001909  35.410  < 2e-16 ***
+## cityChristchurch  2.695432   0.253280  10.642  < 2e-16 ***
+## cityCopenhagen    3.916609   0.217493  18.008  < 2e-16 ***
+## cityDelhi        -4.699154   0.227712 -20.636  < 2e-16 ***
+## cityLyon         -2.216627   0.240004  -9.236  < 2e-16 ***
+## cityMontreal      8.059760   0.237106  33.992  < 2e-16 ***
+## cityParis        -1.718466   0.245735  -6.993 2.73e-12 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 12.54 on 43066 degrees of freedom
-## Multiple R-squared:  0.526,	Adjusted R-squared:  0.5259 
-## F-statistic:  5310 on 9 and 43066 DF,  p-value: < 2.2e-16
+## Residual standard error: 12.55 on 43067 degrees of freedom
+## Multiple R-squared:  0.525,	Adjusted R-squared:  0.5249 
+## F-statistic:  5951 on 8 and 43067 DF,  p-value: < 2.2e-16
 ```
 
 ```r
@@ -952,14 +990,20 @@ fit_mv5_met <- glance(lm_met_ve5)
 
 hxd$lm5_fitted_met <- predict(lm_met_ve5, newdata = hxd, level = 0)
 
-ggplot(hxd, aes(x = MET, y = ve_L, color = city)) +
+figure3 <- ggplot(hxd, aes(x = MET, y = ve_L, color = city)) +
      geom_point(size = 1, alpha = 0.05) + 
      geom_line(data = hxd, aes(y = lm5_fitted_met), size = 1) +
       xlab("MET") + 
-      ylab("Breathing Volume (L/minute)")
+      ylab("Breathing Volume (L/minute)") + 
+   theme_classic()
+plot(figure3)
 ```
 
 ![](Hexoskin_analysis_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
+```r
+ggsave("figure3.pdf", figure3, width = 10, height = 7, dpi = 200)
+```
 
 ### Getting fit statistics for each model
 
@@ -976,8 +1020,8 @@ kable(fitstats_met)
 | 0.4609705|     0.4609580| 13.37029| 36836.286|       0|  1| -172818.8| 345643.5| 345669.5|  7700104|       43074| 43076|
 | 0.4743409|     0.4743165| 13.20358| 19433.966|       0|  2| -172277.8| 344563.6| 344598.3|  7509107|       43073| 43076|
 | 0.4757244|     0.4756879| 13.18634| 13027.756|       0|  3| -172221.0| 344452.0| 344495.4|  7489343|       43072| 43076|
-| 0.4743432|     0.4743066| 13.20370| 12955.800|       0|  3| -172277.7| 344565.4| 344608.7|  7509074|       43072| 43076|
-| 0.5260080|     0.5259090| 12.53892|  5310.231|       0|  9| -170049.4| 340120.8| 340216.2|  6771035|       43066| 43076|
+| 0.5454429|     0.5454007| 12.27846| 12920.692|       0|  4| -169147.7| 338307.4| 338359.4|  6493406|       43071| 43076|
+| 0.5250291|     0.5249408| 12.55172|  5950.739|       0|  8| -170093.8| 340207.7| 340294.4|  6785020|       43067| 43076|
 
 
 ```r
@@ -1012,3 +1056,232 @@ kable(city_regressions)
 |Paris        |(Intercept) | 16.5484041| 0.8866902| 18.6631191| 0.0000000|
 |Paris        |MET         |  0.1302889| 0.1426824|  0.9131388| 0.3612128|
 |Paris        |I(MET^2)    |  0.0825952| 0.0054815| 15.0679763| 0.0000000|
+
+## GAM using Ve_L and MET
+
+
+```r
+met_gam <- gam(ve_L ~ s(MET), data = hxd)
+summary(met_gam)
+```
+
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## ve_L ~ s(MET)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 36.14131    0.06352     569   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##          edf Ref.df    F p-value    
+## s(MET) 8.084  8.747 4472  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.476   Deviance explained = 47.6%
+## GCV = 173.84  Scale est. = 173.8     n = 43076
+```
+
+```r
+plot(met_gam)
+```
+
+![](Hexoskin_analysis_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+### GAM using ve_L, MET and city
+
+
+```r
+met_city_gam <- gam(ve_L ~ s(MET) + city, data = hxd)
+summary(met_city_gam)
+```
+
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## ve_L ~ s(MET) + city
+## 
+## Parametric coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)       35.3489     0.1714  206.29  < 2e-16 ***
+## cityChristchurch   2.6060     0.2532   10.29  < 2e-16 ***
+## cityCopenhagen     3.7843     0.2178   17.38  < 2e-16 ***
+## cityDelhi         -4.8044     0.2277  -21.10  < 2e-16 ***
+## cityLyon          -2.4076     0.2400  -10.03  < 2e-16 ***
+## cityMontreal       8.0542     0.2368   34.01  < 2e-16 ***
+## cityParis         -1.7904     0.2456   -7.29 3.14e-13 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##          edf Ref.df    F p-value    
+## s(MET) 8.535  8.928 4331  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.527   Deviance explained = 52.7%
+## GCV = 156.89  Scale est. = 156.83    n = 43076
+```
+
+```r
+plot(met_city_gam)
+```
+
+![](Hexoskin_analysis_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+
+### GAM using ve_L, MET, City and Sex
+
+
+```r
+met_city_sex_gam <- gam(ve_L ~ s(MET) + city + sex, data = hxd)
+summary(met_city_sex_gam)
+```
+
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## ve_L ~ s(MET) + city + sex
+## 
+## Parametric coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)       35.7699     0.1770 202.078  < 2e-16 ***
+## cityChristchurch   2.6499     0.2530  10.474  < 2e-16 ***
+## cityCopenhagen     3.7636     0.2176  17.298  < 2e-16 ***
+## cityDelhi         -5.2153     0.2317 -22.508  < 2e-16 ***
+## cityLyon          -2.3947     0.2398  -9.987  < 2e-16 ***
+## cityMontreal       8.0301     0.2366  33.943  < 2e-16 ***
+## cityParis         -1.7449     0.2454  -7.111 1.17e-12 ***
+## sexWoman          -1.3303     0.1424  -9.344  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##          edf Ref.df    F p-value    
+## s(MET) 8.527  8.926 4341  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.528   Deviance explained = 52.8%
+## GCV = 156.58  Scale est. = 156.52    n = 43076
+```
+
+```r
+plot(met_city_sex_gam)
+```
+
+![](Hexoskin_analysis_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+
+## GAM using ve, MET, city, age, sex
+
+
+```r
+met_all_gam <- gam(ve_L ~ s(MET) + city + sex + age, data = hxd)
+summary(met_all_gam)
+```
+
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## ve_L ~ s(MET) + city + sex + age
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      54.806362   0.318872 171.876  < 2e-16 ***
+## cityChristchurch  2.051665   0.239833   8.555  < 2e-16 ***
+## cityCopenhagen   -0.680190   0.215610  -3.155  0.00161 ** 
+## cityDelhi        -7.540257   0.221968 -33.970  < 2e-16 ***
+## cityLyon         -2.876051   0.227272 -12.655  < 2e-16 ***
+## cityMontreal      2.394426   0.238021  10.060  < 2e-16 ***
+## cityParis        -3.223803   0.233428 -13.811  < 2e-16 ***
+## sexWoman         -3.189685   0.137467 -23.203  < 2e-16 ***
+## age              -0.509420   0.007259 -70.178  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##          edf Ref.df    F p-value    
+## s(MET) 7.246  8.215 5238  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.576   Deviance explained = 57.6%
+## GCV = 140.56  Scale est. = 140.5     n = 43076
+```
+
+```r
+plot(met_all_gam)
+```
+
+![](Hexoskin_analysis_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+
+### Calculate rmse for models 1 to 5
+
+### Calculate RMSE 1
+
+```r
+RMSE(hxd$ve_L, hxd$lm1_fitted_met)
+```
+
+```
+## Warning: Unknown or uninitialised column: `lm1_fitted_met`.
+```
+
+```
+## [1] 40.46999
+```
+
+### Calculate RMSE 2
+
+```r
+RMSE(hxd$ve_L, hxd$lm2_fitted_met)
+```
+
+```
+## [1] 13.20312
+```
+
+### Calculate RMSE 3
+
+```r
+RMSE(hxd$ve_L, hxd$lm3_fitted_met)
+```
+
+```
+## [1] 13.18573
+```
+
+### Calculate RMSE 4
+
+```r
+RMSE(hxd$ve_L, hxd$lm4_fitted_met)
+```
+
+```
+## [1] 12.27774
+```
+
+### Calculate RMSE lm5
+
+```r
+RMSE(hxd$ve_L, hxd$lm5_fitted_met)
+```
+
+```
+## [1] 12.55041
+```
